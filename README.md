@@ -1,8 +1,46 @@
-# Matching engine based on a limit order book written in GoLang.
+# Go orderbook
 
-This is a Go implementation of the orderbook library originally written in python. https://github.com/dyn4mik3/OrderBook
+Improved matching engine written in Go
 
-Features:
-* Standard price-time priority
-* Supports both market and limit orders
-* Add, cancel, update orders
+## Features
+
+- Standard price-time priority
+- Supports both market and limit orders
+- Supports order cancelling
+- High performance (above 100k trades per second)
+- Optimal memory usage
+
+## Usage
+
+```go
+package main
+
+import (
+	"fmt"
+
+	ob "github.com/muzykantov/orderbook"
+	"github.com/shopspring/decimal"
+)
+
+func main() {
+	orderBook := ob.NewOrderBook()
+
+	for i := 50; i < 100; i = i + 10 {
+		orderBook.ProcessLimitOrder(ob.Buy, fmt.Sprintf("b-%d", i), decimal.New(2, 0), decimal.New(int64(i), 0))
+	}
+
+	for i := 100; i < 150; i = i + 10 {
+		orderBook.ProcessLimitOrder(ob.Sell, fmt.Sprintf("s-%d", i), decimal.New(2, 0), decimal.New(int64(i), 0))
+	}
+	fmt.Println(orderBook)
+
+	ordersDone, partialDone, quantityLeft, _ := orderBook.ProcessMarketOrder(ob.Buy, decimal.New(3, 0))
+	fmt.Println(orderBook)
+
+	fmt.Println("Done:", ordersDone)
+	fmt.Println("Partial:", partialDone)
+	fmt.Println("Quantity Left:", quantityLeft)
+}
+```
+
+### TODO: Make tests, update help
